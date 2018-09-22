@@ -3,6 +3,8 @@
 (defn testfn [__]
   (= [:map :set :vector :list] (map __ [{} #{} [] ()])))
 
+; my original solution:
+
 (defn poke [t]
       (cond
         (= (get (conj t [:foo "bar"]) :foo) "bar") :map
@@ -14,19 +16,10 @@
 
 (testfn poke)
 
+;; --------------------------- after looking into other solutions ----------------------------
 
-(comment
-  (conj '(1 2 3) 4)
-  (last (conj #{1 2 4} 3))
+; omg i love cgrand's solution, it's perfect:
+; empty reduces the testcases essentially to the last testcase: (map __ [{} #{} [] ()])
+; had similar thought with filter/remove but those always return a sequence.
+; TIL: empty :-)
 
-  (map #(conj % 8) (map #(conj % 9) [#{} [] ()]))
-
-  (map poke [{} #{43} [43] '(43)])
-  (map #(filter nil? % [{} #{43} [43] '(43)]))
-
-  (def t1 #{42})
-  (count t1) (count (conj t1 42))
-
-  (flatten (first {:a 1 :b 2}))
-
-  (get (conj '() [:t \t]) :t))
