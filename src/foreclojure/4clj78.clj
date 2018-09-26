@@ -23,7 +23,12 @@
             (my-odd? [x] (if (zero? x) false #(my-even? (dec x))))]
          (map (partial __ my-even?) (range 6)))])
 
-(testfn trampoline)
-(samplefn trampoline)
+(testfn tramp)
+(samplefn tramp)
 
-(defn tramp [f])
+(defn tramp [f & xs]
+  (loop [result (apply f xs)]
+    (if (fn? result) (recur (result)) result)))
+
+(comment
+  (type #(map)))
