@@ -20,14 +20,23 @@
           [2 4]
           [5 1 4]
           [2 3 4 5])) ; 1->2->1->3
-   (__ '([3
+   (__ '( [3]
           [2 4]
           [1 9 3]
           [9 9 2 4]
           [4 6 6 7 8]
-          [5 7 3 5 1 4]]))])
+          [5 7 3 5 1 4]))])
 
-((fn graph [acc vs i]
+(testfn
+  (fn f
+    ([t] (f 0 t))
+    ([i [r & t]]
+     (+ (r i)
+        (if t
+          (min (f i t) (f (inc i) t))
+          0)))))
+
+(defn graph [acc vs i]
   (if (seq vs)
     (let [left [i (get (first vs) i)]
           right [(inc i) (get (first vs) (inc i))]
@@ -37,15 +46,46 @@
           next-i (get (first foo) 0)]
       (println left-or-right x foo next-i)
       (recur (conj acc x) (rest vs) next-i))
-    (apply + acc)))
-      ;[left-or-right x next-i])))
- [] '( [1]
-       [2 4]
-       [5 1 4]
-       [2 3 4 5])
-     0)
+    (do
+      (println acc)
+      (apply + acc))))
+
+(samplefn (fn f [coll] (fn graph [acc vs i]
+                         (if (seq vs)
+                           (let [left [i (get (first vs) i)]
+                                 right [(inc i) (get (first vs) (inc i))]
+                                 left-or-right [left right]
+                                 x  (apply min (remove nil? (map second left-or-right)))
+                                 foo (filter #(= x (second %)) left-or-right)
+                                 next-i (get (first foo) 0)]
+                             (println left-or-right x foo next-i)
+                             (recur (conj acc x) (rest vs) next-i))
+                           (do
+                             (println acc)
+                             (apply + acc)))) [] coll 0))
+
+(partion)
+(comment
+  ((fn graph [acc vs i]
+    (if (seq vs)
+      (let [left [i (get (first vs) i)]
+            right [(inc i) (get (first vs) (inc i))]
+            left-or-right [left right]
+            x  (apply min (remove nil? (map second left-or-right)))
+            foo (filter #(= x (second %)) left-or-right)
+            next-i (get (first foo) 0)]
+        (println left-or-right x foo next-i)
+        (recur (conj acc x) (rest vs) next-i))
+      (apply + acc)))
+        ;[left-or-right x next-i])))
+   [] '( [1]
+         [2 4]
+         [5 1 4]
+         [2 3 4 5])
+       0))
 
 (comment
+  (def foo (filter #(= x (second %)) left-or-right))
   (def left-or-right [[0 1] [1 nil]])
   (def left-or-right [[0 5] [1 1]])
   (def x 1)
