@@ -32,28 +32,48 @@
      (cons seq (filter)))
   #{"hat" "coat" "dog" "cat" "oat" "cot" "hot" "hog"}))
 
-((fn my-perm
+((fn wordchain?
    ( [words]
-     (my-perm words nil))
+     (wordchain? words nil))
    ( [words prev]
-     (if (seq words)
-       (boolean
-         (some true?
-           (for [w words
-                 :when (or (nil? prev) (chainable? prev w false))]
-            (my-perm (disj words w) w))))
-       true)))
- #{"cat" "coat" "art"})
+     (letfn
+       [(chainable? [s1 s2 dirty?]
+          ;(println s1 s2 dirty?)
+          (if (and (empty? s1)(empty? s1)) true
+            (let [match? (= (first s1) (first s2))
+                  next-s1 (if (or (<= 0 (- (count s1) (count s2))) match?)
+                            (rest s1)
+                            s1)
+                  next-s2 (if (or (<= 0 (- (count s2) (count s1))) match?)
+                            (rest s2)
+                            s2)]
 
-((fn my-perm-2
+              (if (or (and dirty? (not= (first s1) (first s2)))
+                      (> (- (count s1) (count s2)) 1)
+                      (< (- (count s1) (count s2)) -1))
+                false
+                (recur next-s1 next-s2 (or dirty? (not match?)))))))] ; takes care of dirty+notMatching and notDirty+matching
+
+       (if (seq words)
+         (boolean
+           (some true?
+             (for [w words
+                   :when (or (nil? prev) (chainable? prev w false))]
+              (wordchain? (disj words w) w))))
+         true))))
+ #{"cat" "coat" "car"})
+
+
+((fn wordchain-loop?
+   "this is an attempt to compare loop and functional approach."
    ( [words]
-     (my-perm-2 words nil))
+     (wordchain-loop? words nil))
    ( [words prev]
      (if (seq words)
        (loop [[w & more] (seq words)]
 
          (if (and (or (nil? prev) (chainable? prev w false))
-                  (my-perm-2 (disj words w) w))
+                  (wordchain-loop? (disj words w) w))
 
            true
            (if more
