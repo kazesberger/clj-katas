@@ -58,7 +58,9 @@
           (acc it-sum) false
           ;:else it-sum)))))
           :else (recur (conj acc it-sum) it-sum))))))
-zipmap
+
+(map (zipmap "0123456789" [0 1 4 9 16 25 36 49 64 81]) "123")
+partition-by
 
 (hap? 7)
 (if (#{1 2 3}5) true false)
