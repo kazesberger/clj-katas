@@ -32,6 +32,8 @@
                true
                (let [matching-stones-left (filter #(seq (filter #{(first tuple)} %)) stones)
                      matching-stones-right (filter #(seq (filter #{(second tuple)} %)) stones)]
+                 (println "  msl" (first tuple) ": " matching-stones-left)
+                 (println "  msr" (second tuple) ": " matching-stones-right)
                  (if (empty? (concat matching-stones-left matching-stones-right))
                    false
                    (not
