@@ -22,8 +22,6 @@
                 [:d :e] [:c :f] [:d :f]])
    (__ [[1 2] [2 3] [2 4] [2 5]])])
 
-(d)
-
 ((defn tour?
   ([edges]
    (if (= 1 (count edges)) ; make this end condition for 2-arity part?
